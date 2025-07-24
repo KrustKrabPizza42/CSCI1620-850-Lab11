@@ -1,98 +1,125 @@
 from tkinter import *
-import area
+import csv
+import os.path
 
-
+#class to make a window for the data input
 class Gui:
+
     def __init__(self, window):
         self.window = window
+        
+        self.frame_one = Frame(self.window)
+        self.one_subframe_one = Frame(self.window)
+        self.input_name = Entry(self.frame_one)
+        self.name_label = Label(self.frame_one, text='Name: ', width=5)
+        self.name_label.pack(side='left')
+        self.input_name.pack(side='left')
+        self.frame_one.pack(padx=10, pady=10, fill=BOTH)
 
-        # Radio buttons
-        self.frame_shape = Frame(self.window)
-        self.label_operation = Label(self.frame_shape, text='Shape\t')
-        self.radio_1 = IntVar()
-        self.radio_1.set(0)
-        self.radio_circle = Radiobutton(self.frame_shape, text='Circle', variable=self.radio_1, value=1, command=self.shape)
-        self.radio_square = Radiobutton(self.frame_shape, text='Square', variable=self.radio_1, value=2, command=self.shape)
-        self.radio_rectangle = Radiobutton(self.frame_shape, text='Rectangle', variable=self.radio_1, value=3, command=self.shape)
-        self.radio_triangle = Radiobutton(self.frame_shape, text='Triangle', variable=self.radio_1, value=4, command=self.shape)
-        self.label_operation.pack(side='left', padx=5)
-        self.radio_circle.pack(side='left')
-        self.radio_square.pack(side='left')
-        self.radio_rectangle.pack(side='left')
-        self.radio_triangle.pack(side='left')
-        self.frame_shape.pack(anchor='w', pady=10)
+        self.frame_two = Frame(self.window)
+        self.input_age = Entry(self.frame_two)
+        self.age_label = Label(self.frame_two, text='Age: ', width=5)
+        self.age_label.pack(side='left')
+        self.input_age.pack(side='left')
+        self.frame_two.pack(padx=10, pady=10, fill=BOTH)
 
-        # First number
-        self.frame_first = Frame(self.window)
-        self.label_first = Label(self.frame_first)
-        self.entry_first = Entry(self.frame_first, width=40)
-        self.label_first.pack(padx=20, side='left')
-        self.entry_first.pack(padx=20, side='left')
-        self.frame_first.pack(anchor='w', pady=10)
-        self.entry_first.pack_forget()
+        self.frame_three = Frame(self.window)
+        self.radio_value = IntVar()
+        self.radio_value.set(0)
+        self.status_label = Label(self.frame_three, text='Status')
+        self.radio_student = Radiobutton(self.frame_three, text='Student', variable=self.radio_value, value=1)
+        self.radio_staff = Radiobutton(self.frame_three, text='Staff', variable=self.radio_value, value=2)
+        self.radio_both = Radiobutton(self.frame_three, text='Both', variable=self.radio_value, value=3)
+        self.status_label.pack(side='left')
+        self.radio_student.pack(side='left')
+        self.radio_staff.pack(side='left')
+        self.radio_both.pack(side='left')
+        self.frame_three.pack(padx=5, pady=5)
 
-        # Second number
-        self.frame_second = Frame(self.window)
-        self.label_second = Label(self.frame_second)
-        self.entry_second = Entry(self.frame_second, width=40)
-        self.label_second.pack(padx=20, side='left')
-        self.entry_second.pack(padx=20, side='left')
-        self.frame_second.pack(anchor='w', pady=10)
-        self.entry_second.pack_forget()
+        self.frame_four = Frame(self.window)
+        self.save_button = Button(self.frame_four, text='Save', command = self.submit)
+        self.save_button.pack()
+        self.frame_four.pack(padx=5, pady=5)
 
-        # Results label
-        self.frame_result = Frame(self.window)
-        self.label_result = Label(self.frame_result)
-        self.label_result.pack(pady=10)
-        self.frame_result.pack()
+        self.frame_five = Frame(self.window)
+        self.form_label = Label(self.frame_five, text='Please fill out all values')
+        self.form_label.pack()
+        self.frame_five.pack(padx=5, pady=5)
+    
+    def submit(self):
 
-        # Compute button
-        self.frame_button = Frame(self.window)
-        self.button_compute = Button(self.frame_button, text='COMPUTE', command=self.compute)
-        self.button_compute.pack(pady=10)
-        self.frame_button.pack()
+        #Section to get name input
+        self.__name = self.input_name.get().strip()
 
-    def shape(self):
-        self.entry_first.delete(0, END)
-        self.entry_second.delete(0, END)
-        self.label_result.config(text='')
-        self.entry_first.pack()
-        shape = self.radio_1.get()
+        if self.__name == '':
+            self.__name = 'Anonymous'
 
-        if shape == 1:
-            self.label_first.config(text='Radius')
-            self.label_second.config(text='')
-            self.entry_second.pack_forget()
-        elif shape == 2:
-            self.label_first.config(text='Side')
-            self.label_second.config(text='')
-            self.entry_second.pack_forget()
-        elif shape == 3:
-            self.label_first.config(text='Length')
-            self.label_second.config(text='Width')
-            self.entry_second.pack()
-        elif shape == 4:
-            self.label_first.config(text='Base')
-            self.label_second.config(text='Height')
-            self.entry_second.pack()
+        
+        #section to set value of status based on which radio button is selected
+        if self.radio_value.get() == 1:
 
-    def compute(self):
+            self.__status = 'Student'
+        
+        elif self.radio_value.get() == 2:
+            
+            self.__status = 'Staff'
+
+        elif self.radio_value.get() == 3:
+
+            self.__status = 'Both'
+    
+        else:
+        
+            self.__status = 'N/A'
+
+        #try catch to catch a value error when converting to int
         try:
-            first_num = self.entry_first.get()
-            second_num = self.entry_second.get()
-            shape = self.radio_1.get()
+            self.__age = int(self.input_age.get().strip())
 
-            if shape == 1:
-                self.label_result.config(text=f'Circle area = {area.circle(first_num)}')
-            elif shape == 2:
-                self.label_result.config(text=f'Square area = {area.square(first_num)}')
-            elif shape == 3:
-                self.label_result.config(text=f'Rectangle area = {area.rectangle(first_num, second_num)}')
-            elif shape == 4:
-                self.label_result.config(text=f'Triangle area = {area.triangle(first_num, second_num)}')
-            else:
-                self.label_result.config(text='No operation selected')
+            if self.__age < 0:
+                raise ValueError
+        
         except ValueError:
-            self.label_result.config(text='Enter numeric values')
-        except TypeError:
-            self.label_result.config(text='Values must be positive')
+            
+            self.form_label.config(text='Enter correct age value')
+
+        #only attempts to save data if not value error is raised
+        else:
+
+            self.get_data_dict()
+
+            self.save_to_file()
+
+            self.input_name.delete(0, END)
+            self.input_age.delete(0, END)
+            self.radio_value = 0
+            self.form_label.config(text='')
+
+    #method just to fill out a dictionary
+    def get_data_dict(self):
+
+        self.__data_dictionary = {'Name': self.__name, 'Age': self.__age, 'Status': self.__status}
+
+    
+    #method to save the dictionary to a csv file using a dictwriter
+    def save_to_file(self):
+
+        
+
+        if os.path.isfile('data.csv'):
+
+            with open('data.csv', 'a', newline='') as csvfile:
+
+                writer = csv.DictWriter(csvfile, fieldnames=['Name', 'Age', 'Status'])
+
+                writer.writerow(self.__data_dictionary)
+        
+        else:
+
+            with open('data.csv', 'w', newline='') as csvfile:
+
+                writer = csv.DictWriter(csvfile, fieldnames=['Name', 'Age', 'Status'])
+
+                writer.writeheader()
+
+                writer.writerow(self.__data_dictionary)
